@@ -61,6 +61,8 @@ https://api.example.com/v1/chat, then URL should be
 \"https://api.example.com/v1/\"."
   url)
 
+(cl-defstruct (llm-openai-azure (:include llm-openai-compatible)))
+
 (cl-defmethod llm-nonfree-message-info ((_ llm-openai))
   "Return Open AI's nonfree terms of service."
   "https://openai.com/policies/terms-of-use")
@@ -103,6 +105,9 @@ PROVIDER is the Open AI provider struct."
     ;; which always returns multibyte.
     `(("Authorization" . ,(format "Bearer %s" (encode-coding-string key 'utf-8))))))
 
+(cl-defmethod llm-openai--headers ((provider llm-openai-azure))
+  `(("api-key" . ,(format "%s" (llm-openai-key provider)))))
+
 (cl-defmethod llm-provider-headers ((provider llm-openai))
   (llm-openai--headers provider))
 
@@ -124,6 +129,12 @@ PROVIDER is the Open AI provider struct."
   (concat (llm-openai-compatible-url provider)
           (unless (string-suffix-p "/" (llm-openai-compatible-url provider))
             "/") command))
+
+(cl-defmethod llm-openai--url ((provider llm-openai-azure) command)
+  (concat (llm-openai-compatible-url provider)
+          (unless (string-suffix-p "/" (llm-openai-compatible-url provider)) "/")
+          command
+          "?api-version=2023-05-15"))
 
 (cl-defmethod llm-provider-embedding-extract-error ((_ llm-openai) err-response)
   (let ((errdata (assoc-default 'error err-response)))

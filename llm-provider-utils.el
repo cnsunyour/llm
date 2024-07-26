@@ -432,7 +432,10 @@ conversation history will follow."
      ((string-match-p "orca" model) 2048)
      ((string-match-p "llama\s*2" model) 4096)
      ((string-match-p "llama" model) 2048)
-     ((string-match-p "starcoder" model) 8192))))
+     ((string-match-p "starcoder" model) 8192)
+     ((string-match-p "gemma" model) 8192)
+     ;; default to the smallest context window, 2048
+     (t 2048))))
 
 (defun llm-provider-utils-openai-arguments (args)
   "Convert ARGS to the Open AI function calling spec.
@@ -603,7 +606,7 @@ cons of functions called and their output."
 ;; This is a useful method for getting out of the request buffer when it's time
 ;; to make callbacks.
 (defun llm-provider-utils-callback-in-buffer (buf f &rest args)
-  "Run F with ARSG in the context of BUF.
+  "Run F with ARGS in the context of BUF.
 But if BUF has been killed, use a temporary buffer instead.
 If F is nil, nothing is done."
   (when f

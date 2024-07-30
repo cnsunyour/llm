@@ -135,5 +135,32 @@
   (should (= 8192 (llm-chat-token-limit
                    (make-llm-gpt4all :chat-model "Mistral")))))
 
+(ert-deftest llm-test-ollama-function-calling-capabilities ()
+  ;; tests subject to change as models may get function calling
+  (cl-flet ((has-fc (model)
+              (member 'function-calls (llm-capabilities (make-llm-ollama :chat-model model)))))
+    (should (has-fc "llama3.1"))
+    (should (has-fc "llama3.1:8b-instruct-q8_0"))
+    (should (has-fc "mistral"))
+    (should-not (has-fc "gemma"))
+    (should-not (has-fc "gemma2"))
+    (should-not (has-fc "llama2"))
+    (should-not (has-fc "llama"))
+    (should-not (has-fc "unknown"))))
+
+(ert-deftest llm-test-ollama-embedding-capabilities ()
+  ;; tests subject to change as models may get function calling
+  (cl-flet ((has-emb (model)
+              (member 'embeddings
+                      (llm-capabilities (make-llm-ollama :embedding-model model
+                                                         :chat-model "mistral")))))
+    (should-not (has-emb "llama3.1"))
+    (should-not (has-emb "mistral"))
+    (should (has-emb "nomic-embed-text"))
+    (should (has-emb "mxbai-embed-large"))
+    (should-not (has-emb "mxbai-embed-small"))
+    (should-not (has-emb "unknown"))
+    (should-not (has-emb nil))))
+
 (provide 'llm-test)
 ;;; llm-test.el ends here

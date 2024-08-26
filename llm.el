@@ -5,7 +5,7 @@
 ;; Author: Andrew Hyatt <ahyatt@gmail.com>
 ;; Homepage: https://github.com/ahyatt/llm
 ;; Package-Requires: ((emacs "28.1") (plz "0.8"))
-;; Package-Version: 0.17.1
+;; Package-Version: 0.17.2
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; This program is free software; you can redistribute it and/or
@@ -94,6 +94,8 @@ RESULT is the result of the function call.  This is required."
 
 (cl-defstruct llm-function-call
   "This is a struct to represent a function call the LLM can make.
+
+All fields are required.
 
 FUNCTION is a function to call.
 
@@ -340,9 +342,6 @@ be passed to `llm-cancel-request'."
                                       new-response-callback
                                       new-error-callback)))
     result))
-
-(cl-defmethod llm-chat-function-call ((_ (eql nil)) _ _ _)
-  (error "LLM provider was nil.  Please set the provider in the application you are using"))
 
 (cl-defgeneric llm-chat-streaming (provider prompt partial-callback response-callback error-callback)
   "Stream a response to PROMPT from PROVIDER.

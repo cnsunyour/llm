@@ -5,7 +5,7 @@
 ;; Author: Andrew Hyatt <ahyatt@gmail.com>
 ;; Homepage: https://github.com/ahyatt/llm
 ;; Package-Requires: ((emacs "28.1") (plz "0.8"))
-;; Package-Version: 0.17.2
+;; Package-Version: 0.17.3
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
 ;; This program is free software; you can redistribute it and/or
@@ -390,7 +390,6 @@ be passed to `llm-cancel-request'."
   ;; We need to wrap the callbacks before we set llm-log to nil.
   (let* ((new-partial-callback (lambda (response)
                                  (when partial-callback
-                                   (llm--log 'api-receive-partial :provider provider :msg response)
                                    (let ((llm-log nil))
                                      (funcall partial-callback response)))))
          (new-response-callback (lambda (response)
